@@ -1,12 +1,23 @@
 import { useContext, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { ACTION_TYPES, AuthContext } from "./AuthContext";
 import { axiosInstance } from "./apiUtils";
 
 const ProtectedRoute = ({ redirectPath = "/login", children }) => {
+  const navigate = useNavigate();
   const { state, dispatch } = useContext(AuthContext);
-  debugger;
   const fetchUser = async () => {
+    const authenticated = await localStorage.getItem("authenticated");
+    console.log(authenticated);
+    if (authenticated) {
+      dispatch({
+        type: ACTION_TYPES.SET_USER_DETAILS,
+        payload: {
+          user: "success",
+        },
+      });
+      return navigate("/");
+    }
     try {
       const response = await axiosInstance.get("/test/user");
       dispatch({
