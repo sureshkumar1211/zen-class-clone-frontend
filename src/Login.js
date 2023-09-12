@@ -1,16 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { axiosInstance } from "./apiUtils";
+import { ACTION_TYPES, AuthContext } from "./AuthContext";
 
 const Login = () => {
+  const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
   const onFinish = async (values) => {
     console.log("Received values of form: ", values);
     try {
       const data = await axiosInstance.post("/auth/signin", values);
-      console.log(data);
+      dispatch({
+        type: ACTION_TYPES.SET_USER_DETAILS,
+        payload: { user: data.data },
+      });
       navigate("/");
     } catch (error) {
       console.error(error);

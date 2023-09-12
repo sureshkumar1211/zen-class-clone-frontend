@@ -1,26 +1,54 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   UserOutlined,
   ProfileFilled,
   IdcardFilled,
-  HomeFilled
+  HomeFilled,
 } from "@ant-design/icons";
-import { Layout, Menu, Button, Avatar, Row, theme } from "antd";
+import {
+  Layout,
+  Menu,
+  Button,
+  Dropdown,
+  Space,
+  Avatar,
+  Row,
+  theme,
+} from "antd";
 import ZenLogo from "./ZenLogo";
+import { ACTION_TYPES, AuthContext } from "./AuthContext";
 const HEADER_TITLE = {
   "/tasks": "Task Submissions",
   "/": "Class",
-  "/dashboard": "Dashboard"
+  "/dashboard": "Dashboard",
 };
+
 const { Header, Sider, Content } = Layout;
+
 const MainLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const { dispatch } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const {
-    token: { colorBgContainer }
+    token: { colorBgContainer },
   } = theme.useToken();
+  const logoutHandler = (e) => {
+    e.preventDefault();
+    dispatch({ type: ACTION_TYPES.LOGOUT });
+    navigate("/login");
+  };
+  const items = [
+    {
+      label: (
+        <a href="" onClick={logoutHandler}>
+          logout
+        </a>
+      ),
+      key: "0",
+    },
+  ];
   return (
     <Layout>
       <Sider
@@ -32,7 +60,7 @@ const MainLayout = ({ children }) => {
           left: 0,
           top: 0,
           bottom: 0,
-          zIndex: 100
+          zIndex: 100,
         }}
         trigger={null}
         collapsible
@@ -43,7 +71,7 @@ const MainLayout = ({ children }) => {
             style={{
               width: "100%",
               padding: "10px",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             <div style={{ marginLeft: "10px" }}>
@@ -58,7 +86,7 @@ const MainLayout = ({ children }) => {
               width: "100%",
               padding: "10px",
               alignItems: "center",
-              justifyContent: "center"
+              justifyContent: "center",
             }}
           >
             <ZenLogo />
@@ -76,7 +104,7 @@ const MainLayout = ({ children }) => {
               label: "Class",
               onClick: () => {
                 navigate("/");
-              }
+              },
             },
             {
               key: "2",
@@ -84,7 +112,7 @@ const MainLayout = ({ children }) => {
               label: "Dashboard",
               onClick: () => {
                 navigate("/dashboard");
-              }
+              },
             },
             {
               key: "3",
@@ -92,14 +120,14 @@ const MainLayout = ({ children }) => {
               label: "Tasks",
               onClick: () => {
                 navigate("/tasks");
-              }
-            }
+              },
+            },
           ]}
         />
       </Sider>
       <Layout
         style={{
-          marginLeft: collapsed ? 80 : 200
+          marginLeft: collapsed ? 80 : 200,
         }}
       >
         <Row
@@ -113,7 +141,7 @@ const MainLayout = ({ children }) => {
             right: 0,
             zIndex: 0,
             background: colorBgContainer,
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           <h2
@@ -122,7 +150,7 @@ const MainLayout = ({ children }) => {
               fontStyle: "normal",
               color: "#2a2a2a",
               marginLeft: "200px",
-              fontWeight: "500"
+              fontWeight: "500",
             }}
           >
             {HEADER_TITLE[location.pathname]}
@@ -131,14 +159,20 @@ const MainLayout = ({ children }) => {
             style={{ marginLeft: "auto", alignItems: "center", gap: "20px" }}
           >
             <h4 style={{ fontSize: "20px" }}>Reka</h4>
-            <Avatar size={46} icon={<UserOutlined />} />
+            <Dropdown menu={{ items }}>
+              <a onClick={(e) => e.preventDefault()}>
+                <Space>
+                  <Avatar size={46} icon={<UserOutlined />} />
+                </Space>
+              </a>
+            </Dropdown>
           </Row>
         </Row>
         <Content
           style={{
             marginTop: "100px",
             padding: 24,
-            minHeight: "80vh"
+            minHeight: "80vh",
           }}
         >
           {children}
